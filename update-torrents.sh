@@ -64,6 +64,20 @@ debian() {
 	fi
 }
 
+elementary() {
+    echo "Checking if elementaryOS is updated..."
+    local CURRENT_ID=`$TRANSMISSION --list | grep elementary| awk '{print $1}'`
+    local CURRENT=`$TRANSMISSION --list | grep elementary | awk '{print $10}' | cut -d "-" -f 2`
+    local RELEASE=`curl -s https://elementary.io | grep magnet | grep -o "elementaryos.*\.iso&" | cut -d - -f 2`
+
+    if ! printf "$RELEASE\n$CURRENT" | sort -C
+    then
+        $TRANSMISSION --trash-torrent --download-dir $DOWNLOAD_DIR -a https://elementary.io/`curl -s https://elementary.io | grep -o "magnet:.*\.iso"`
+        $TRANSMISSION -t $CURRENT_ID --remove-and-delete
+        echo "Updating to ElementaryOS $RELEASE"
+    fi
+}
+
 help_msg() {
 	printf "usage: `basename $0` [-d <distros>]\n\n"
 cat << EOF
