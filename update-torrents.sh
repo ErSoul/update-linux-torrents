@@ -3,6 +3,7 @@
 type curl > /dev/null 2>&1 || (echo "ERROR: curl must be installed." >&2 && exit 1)
 type awk > /dev/null 2>&1 || (echo "ERROR: awk must be installed." >&2 && exit 1)
 type transmission-remote > /dev/null 2>&1 || (echo "ERROR: transmission must be installed." >&2 && exit 1)
+type zsync > /dev/null 2>&1 || (echo "ERROR: zsync must be installed." >&2 && exit 1)
 
 TRANSMISSION="transmission-remote --auth transmission:transmission"
 DOWNLOAD_DIR="/srv/DATA/ISOS"
@@ -94,6 +95,23 @@ elementary() {
         $TRANSMISSION --trash-torrent --download-dir $DOWNLOAD_DIR -a https://elementary.io/`curl -s https://elementary.io | grep -o "magnet:.*\.iso"`
         $TRANSMISSION -t $CURRENT_ID --remove-and-delete
         echo "Updating to ElementaryOS $RELEASE"
+    fi
+}
+
+tinyServer() {
+    echo "Checking if TinyCore Server is updated..."
+    local CURRENT=`ls | grep ^Core | grep -o "[[:digit:]]\+\.[[:digit:]]\+"`
+    local RELEASE=`curl -s http://tinycorelinux.net/ | grep "The latest version" | grep -o "[[:digit:]]\+\.[[:digit:]]\+"`
+
+	if [ -z $CURRENT ]; then
+        zsync -o $DOWNLOAD_DIR/Core-$RELEASE.iso http://tinycorelinux.net/${RELEASE%.*}.x/x86/release/Core-$RELEASE.iso.zsync
+	fi
+
+    if ! printf "$RELEASE\n$CURRENT" | sort -C
+    then
+		rm $DOWNLOAD_DIR/Core-$CURRENT.iso
+        zsync -o $DOWNLOAD_DIR/Core-$RELEASE.iso http://tinycorelinux.net/${RELEASE%.*}.x/x86/release/Core-$RELEASE.iso.zsync
+        echo "Updating to TinyCore Server $RELEASE"
     fi
 }
 
