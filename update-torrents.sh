@@ -10,15 +10,18 @@ DOWNLOAD_DIR="/srv/DATA/ISOS"
 ubuntu() {
 	echo "Checking if Ubuntu is updated..."
 	local CURRENT_ID=`$TRANSMISSION --list | grep ubuntu | awk '{print $1}'`
-	local CURRENT_NAME=`$TRANSMISSION --list | grep ubuntu | awk '{print $10}'`
-	local CURRENT_VER=`echo $CURRENT_NAME | cut -d "-" -f 2`
-	local RELEASE_VER=`curl -s https://releases.ubuntu.com/ | grep LTS | grep -o '[[:digit:]]\+\.[[:digit:]]\+\(\.[[:digit:]]\+\)\?' | sort -V | tail -n1`
+	local CURRENT=`$TRANSMISSION --list | grep ubuntu | awk '{print $10}' | cut -d "-" -f 2`
+	local RELEASE=`curl -s https://releases.ubuntu.com/ | grep LTS | grep -o '[[:digit:]]\+\.[[:digit:]]\+\(\.[[:digit:]]\+\)\?' | sort -V | tail -n1`
+
+	if [ -z $CURRENT ]; then
+		$TRANSMISSION --trash-torrent --download-dir $DOWNLOAD_DIR -a "https://releases.ubuntu.com/$RELEASE/ubuntu-$RELEASE-live-server-amd64.iso.torrent"
+	fi
 	
-	if ! printf "$RELEASE_VER\n$CURRENT_VER" | sort -C
+	if ! printf "$RELEASE\n$CURRENT" | sort -C
 	then
-		$TRANSMISSION --trash-torrent --download-dir $DOWNLOAD_DIR -a "https://releases.ubuntu.com/$RELEASE_VER/ubuntu-$RELEASE_VER-live-server-amd64.iso.torrent"
+		$TRANSMISSION --trash-torrent --download-dir $DOWNLOAD_DIR -a "https://releases.ubuntu.com/$RELEASE/ubuntu-$RELEASE-live-server-amd64.iso.torrent"
 		$TRANSMISSION -t $CURRENT_ID --remove-and-delete
-		echo "Updating to Ubuntu $RELEASE_VER"
+		echo "Updating to Ubuntu $RELEASE"
 	fi
 }
 
@@ -28,6 +31,10 @@ kali() {
 	local CURRENT=`$TRANSMISSION --list | grep kali | awk '{print $10}' | cut -d "-" -f 3`
 	local RELEASE=`curl -s https://cdimage.kali.org/current/ | grep -o kali-linux-.*-live-amd64.iso.torrent | grep -o '[[:digit:]]\+\.[[:digit:]]' | sort -V | tail -n1`
 	
+	if [ -z $CURRENT ]; then
+		$TRANSMISSION --trash-torrent --download-dir $DOWNLOAD_DIR -a "https://cdimage.kali.org/kali-$RELEASE/kali-linux-$RELEASE-live-amd64.iso.torrent"
+	fi
+
 	if ! printf "$RELEASE\n$CURRENT" | sort -C
 	then
 		$TRANSMISSION --trash-torrent --download-dir $DOWNLOAD_DIR -a "https://cdimage.kali.org/kali-$RELEASE/kali-linux-$RELEASE-live-amd64.iso.torrent"
@@ -42,6 +49,10 @@ tails() {
 	local CURRENT=`$TRANSMISSION --list | grep tails | awk '{print $10}' | cut -d "-" -f 3`
 	local RELEASE=`curl -s https://tails.net/torrents/files/ | grep -o tails-amd64-.*.iso.torrent | grep -v rc | grep -o '[[:digit:]]\+\.[[:digit:]]\+' | sort -V | tail -n1`
 	
+	if [ -z $CURRENT ]; then
+		$TRANSMISSION --trash-torrent --download-dir $DOWNLOAD_DIR -a "https://tails.net/torrents/files/tails-amd64-$RELEASE.iso.torrent"
+	fi
+
 	if ! printf "$RELEASE\n$CURRENT" | sort -C
 	then
 		$TRANSMISSION --trash-torrent --download-dir $DOWNLOAD_DIR -a "https://tails.net/torrents/files/tails-amd64-$RELEASE.iso.torrent"
@@ -55,6 +66,10 @@ debian() {
 	local CURRENT_ID=`$TRANSMISSION --list | grep debian | awk '{print $1}'`
 	local CURRENT=`$TRANSMISSION --list | grep debian | awk '{print $10}' | cut -d "-" -f 2`
 	local RELEASE=`curl -s https://cdimage.debian.org/debian-cd/current/amd64/bt-cd/ | grep "amd64-netinst.iso.torrent" | grep -v "edu\|mac" | grep -o '[[:digit:]]\+\.[[:digit:]]\+\.[[:digit:]]\+' | sort -V | tail -n1`
+
+	if [ -z $CURRENT ]; then
+		$TRANSMISSION --trash-torrent --download-dir $DOWNLOAD_DIR -a "https://cdimage.debian.org/debian-cd/current/amd64/bt-cd/debian-$RELEASE-amd64-netinst.iso.torrent"
+	fi
 	
 	if ! printf "$RELEASE\n$CURRENT" | sort -C
 	then
@@ -69,6 +84,10 @@ elementary() {
     local CURRENT_ID=`$TRANSMISSION --list | grep elementary| awk '{print $1}'`
     local CURRENT=`$TRANSMISSION --list | grep elementary | awk '{print $10}' | cut -d "-" -f 2`
     local RELEASE=`curl -s https://elementary.io | grep magnet | grep -o "elementaryos.*\.iso&" | cut -d - -f 2`
+
+	if [ -z $CURRENT ]; then
+        $TRANSMISSION --trash-torrent --download-dir $DOWNLOAD_DIR -a https://elementary.io/`curl -s https://elementary.io | grep -o "magnet:.*\.iso"`
+	fi
 
     if ! printf "$RELEASE\n$CURRENT" | sort -C
     then
