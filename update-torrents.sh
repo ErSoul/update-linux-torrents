@@ -15,6 +15,7 @@ ubuntu() {
 	local RELEASE=`curl -s https://releases.ubuntu.com/ | grep LTS | grep -o '[[:digit:]]\+\.[[:digit:]]\+\(\.[[:digit:]]\+\)\?' | sort -V | tail -n1`
 
 	if [ -z $CURRENT ]; then
+		echo "Ubuntu isn't in the download directory. Downloading it..."
 		$TRANSMISSION --trash-torrent --download-dir $DOWNLOAD_DIR -a "https://releases.ubuntu.com/$RELEASE/ubuntu-$RELEASE-live-server-amd64.iso.torrent"
 	fi
 	
@@ -33,6 +34,7 @@ kali() {
 	local RELEASE=`curl -s https://cdimage.kali.org/current/ | grep -o kali-linux-.*-live-amd64.iso.torrent | grep -o '[[:digit:]]\+\.[[:digit:]]' | sort -V | tail -n1`
 	
 	if [ -z $CURRENT ]; then
+		echo "Kali Linux isn't in the download directory. Downloading it..."
 		$TRANSMISSION --trash-torrent --download-dir $DOWNLOAD_DIR -a "https://cdimage.kali.org/kali-$RELEASE/kali-linux-$RELEASE-live-amd64.iso.torrent"
 	fi
 
@@ -51,6 +53,7 @@ tails() {
 	local RELEASE=`curl -s https://tails.net/torrents/files/ | grep -o tails-amd64-.*.iso.torrent | grep -v rc | grep -o '[[:digit:]]\+\.[[:digit:]]\+' | sort -V | tail -n1`
 	
 	if [ -z $CURRENT ]; then
+		echo "Tails isn't in the download directory. Downloading it..."
 		$TRANSMISSION --trash-torrent --download-dir $DOWNLOAD_DIR -a "https://tails.net/torrents/files/tails-amd64-$RELEASE.iso.torrent"
 	fi
 
@@ -69,6 +72,7 @@ debian() {
 	local RELEASE=`curl -s https://cdimage.debian.org/debian-cd/current/amd64/bt-cd/ | grep "amd64-netinst.iso.torrent" | grep -v "edu\|mac" | grep -o '[[:digit:]]\+\.[[:digit:]]\+\.[[:digit:]]\+' | sort -V | tail -n1`
 
 	if [ -z $CURRENT ]; then
+		echo "Debian isn't in the download directory. Downloading it..."
 		$TRANSMISSION --trash-torrent --download-dir $DOWNLOAD_DIR -a "https://cdimage.debian.org/debian-cd/current/amd64/bt-cd/debian-$RELEASE-amd64-netinst.iso.torrent"
 	fi
 	
@@ -87,6 +91,7 @@ elementary() {
     local RELEASE=`curl -s https://elementary.io | grep magnet | grep -o "elementaryos.*\.iso&" | cut -d - -f 2`
 
 	if [ -z $CURRENT ]; then
+		echo "ElementaryOS isn't in the download directory. Downloading it..."
         $TRANSMISSION --trash-torrent --download-dir $DOWNLOAD_DIR -a https://elementary.io/`curl -s https://elementary.io | grep -o "magnet:.*\.iso"`
 	fi
 
@@ -104,14 +109,15 @@ tinyServer() {
     local RELEASE=`curl -s http://tinycorelinux.net/ | grep "The latest version" | grep -o "[[:digit:]]\+\.[[:digit:]]\+"`
 
 	if [ -z $CURRENT ]; then
+		echo "TinyCore isn't in the download directory. Downloading it..."
         zsync -o $DOWNLOAD_DIR/Core-$RELEASE.iso http://tinycorelinux.net/${RELEASE%.*}.x/x86/release/Core-$RELEASE.iso.zsync
 	fi
 
     if ! printf "$RELEASE\n$CURRENT" | sort -C
     then
 		rm $DOWNLOAD_DIR/Core-$CURRENT.iso
-        zsync -o $DOWNLOAD_DIR/Core-$RELEASE.iso http://tinycorelinux.net/${RELEASE%.*}.x/x86/release/Core-$RELEASE.iso.zsync
         echo "Updating to TinyCore Server $RELEASE"
+        zsync -o $DOWNLOAD_DIR/Core-$RELEASE.iso http://tinycorelinux.net/${RELEASE%.*}.x/x86/release/Core-$RELEASE.iso.zsync
     fi
 }
 
@@ -122,14 +128,15 @@ zorinos() {
 	local RELEASE_VER=`curl -s https://distro.ibiblio.org/zorinos/$RELEASE/ | awk -F 'href="' '/<a/{gsub(/".*/, "", $2); print $2}' | cut -d - -f 3 | sort -V | tail -n1`
 
 	if [ -z $CURRENT ]; then
+		echo "ZorinOS isn't in the download directory. Downloading it..."
 		curl -o $DOWNLOAD_DIR/Zorin-OS-$RELEASE_VER-Core-64-bit.iso https://distro.ibiblio.org/zorinos/$RELEASE/Zorin-OS-$RELEASE_VER-Core-64-bit.iso
 	fi
 
     if ! printf "$RELEASE_VER\n$CURRENT" | sort -C
     then
 		rm $DOWNLOAD_DIR/Zorin*
-		curl -o $DOWNLOAD_DIR/Zorin-OS-$RELEASE_VER-Core-64-bit.iso https://distro.ibiblio.org/zorinos/$RELEASE/Zorin-OS-$RELEASE_VER-Core-64-bit.iso
         echo "Updating ZorinOs $RELEASE_VER"
+		curl -o $DOWNLOAD_DIR/Zorin-OS-$RELEASE_VER-Core-64-bit.iso https://distro.ibiblio.org/zorinos/$RELEASE/Zorin-OS-$RELEASE_VER-Core-64-bit.iso
     fi
 }
 
