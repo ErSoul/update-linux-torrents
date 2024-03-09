@@ -100,7 +100,7 @@ elementary() {
 
 tinyServer() {
     echo "Checking if TinyCore Server is updated..."
-    local CURRENT=`ls | grep ^Core | grep -o "[[:digit:]]\+\.[[:digit:]]\+"`
+    local CURRENT=`ls $DOWNLOAD_DIR | grep ^Core | grep -o "[[:digit:]]\+\.[[:digit:]]\+"`
     local RELEASE=`curl -s http://tinycorelinux.net/ | grep "The latest version" | grep -o "[[:digit:]]\+\.[[:digit:]]\+"`
 
 	if [ -z $CURRENT ]; then
