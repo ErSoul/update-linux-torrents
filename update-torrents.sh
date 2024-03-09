@@ -115,6 +115,24 @@ tinyServer() {
     fi
 }
 
+zorinos() {
+    echo "Checking if ZorinOS is updated..."
+    local CURRENT=`ls $DOWNLOAD_DIR | grep Zorin | cut -d - -f 3`
+    local RELEASE=`curl -s https://distro.ibiblio.org/zorinos/ | awk -F 'href="' '/<a/{gsub(/".*/, "", $2); print $2}' | cut -d / -f 1 | sort -r | head -n1`
+	local RELEASE_VER=`curl -s https://distro.ibiblio.org/zorinos/$RELEASE/ | awk -F 'href="' '/<a/{gsub(/".*/, "", $2); print $2}' | cut -d - -f 3 | sort -V | tail -n1`
+
+	if [ -z $CURRENT ]; then
+		curl -o $DOWNLOAD_DIR/Zorin-OS-$RELEASE_VER-Core-64-bit.iso https://distro.ibiblio.org/zorinos/$RELEASE/Zorin-OS-$RELEASE_VER-Core-64-bit.iso
+	fi
+
+    if ! printf "$RELEASE_VER\n$CURRENT" | sort -C
+    then
+		rm $DOWNLOAD_DIR/Zorin*
+		curl -o $DOWNLOAD_DIR/Zorin-OS-$RELEASE_VER-Core-64-bit.iso https://distro.ibiblio.org/zorinos/$RELEASE/Zorin-OS-$RELEASE_VER-Core-64-bit.iso
+        echo "Updating ZorinOs $RELEASE_VER"
+    fi
+}
+
 help_msg() {
 	printf "usage: `basename $0` [-d <distros>]\n\n"
 cat << EOF
