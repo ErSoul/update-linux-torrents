@@ -177,6 +177,43 @@ clonezilla() {
     fi
 }
 
+gparted() {
+    echo "Checking if GParted is updated..."
+    local CURRENT=`ls $DOWNLOAD_DIR | grep gparted | grep -o "[[:digit:]]\+\.[[:digit:]]\+\.[[:digit:]]\+-[[:digit:]]\+"`
+    local RELEASE=`curl -s https://sourceforge.net/projects/gparted/files/gparted-live-stable/ | grep "<a href=\"/projects/gparted/files/gparted-live-stable/" | grep -o "[[:digit:]]\+\.[[:digit:]]\+\.[[:digit:]]\+-[[:digit:]]\+" | sort -Vr | head -n1`
+	echo -e "Actual: $CURRENT\nNuevo: $RELEASE"
+
+	if [ -z $CURRENT ]; then
+		echo "GParted isn't in the download directory. Downloading it..."
+		curl -s -o $DOWNLOAD_DIR/gparted-live-$RELEASE-amd64.iso -L https://sourceforge.net/projects/gparted/files/gparted-live-stable/$RELEASE/gparted-live-$RELEASE-amd64.iso/download
+	fi
+
+    if ! printf "$RELEASE\n$CURRENT" | sort -VC
+    then
+		rm $DOWNLOAD_DIR/gparted*
+        echo "Updating GParted $RELEASE"
+		curl -s -o $DOWNLOAD_DIR/gparted-live-$RELEASE-amd64.iso -L https://sourceforge.net/projects/gparted/files/gparted-live-stable/$RELEASE/gparted-live-$RELEASE-amd64.iso/download
+    fi
+}
+
+systemrescue() {
+    echo "Checking if System Rescue is updated..."
+    local CURRENT=`ls $DOWNLOAD_DIR | grep systemrescue | grep -o "[[:digit:]]\+\.[[:digit:]]\+\(\.[[:digit:]]\+\)\?"`
+    local RELEASE=`curl -s https://www.system-rescue.org/Download/ | grep "systemrescue.*.iso" | grep -o "[[:digit:]]\+\.[[:digit:]]\+\(\.[[:digit:]]\)\?" | sort -Vur | head -n1`
+
+	if [ -z $CURRENT ]; then
+		echo "SystemRescue isn't in the download directory. Downloading it..."
+		curl -s -o $DOWNLOAD_DIR/systemrescue-$RELEASE-amd64.iso https://fastly-cdn.system-rescue.org/releases/$RELEASE/systemrescue-$RELEASE-amd64.iso
+	fi
+
+    if ! printf "$RELEASE\n$CURRENT" | sort -VC
+    then
+		rm $DOWNLOAD_DIR/systemrescue*
+        echo "Updating SystemRescue $RELEASE"
+		curl -s -o $DOWNLOAD_DIR/systemrescue-$RELEASE-amd64.iso https://fastly-cdn.system-rescue.org/releases/$RELEASE/systemrescue-$RELEASE-amd64.iso
+    fi
+}
+
 help_msg() {
 	printf "usage: `basename $0` [-d <distros>]\n\n"
 cat << EOF
