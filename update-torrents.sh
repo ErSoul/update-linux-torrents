@@ -140,6 +140,43 @@ zorinos() {
     fi
 }
 
+grml() {
+	echo "Checking if GRML is updated..."
+	local CURRENT_ID=`$TRANSMISSION --list | grep grml | awk '{print $1}'`
+	local CURRENT=`$TRANSMISSION --list | grep grml | awk '{print $10}' | grep -o "[[:digit:]]\+.[[:digit:]]\+"`
+	local RELEASE=`curl -s https://grml.org/download/ | grep -i "Download Grml" | grep -o "[[:digit:]]\+\.[[:digit:]]\+"`
+
+	if [ -z $CURRENT ]; then
+		echo "Grml isn't in the download directory. Downloading it..."
+		$TRANSMISSION --trash-torrent --download-dir $DOWNLOAD_DIR -a "https://download.grml.org/grml64-full_${RELEASE}.iso.torrent"
+	fi
+
+	if ! printf "$RELEASE\n$CURRENT" | sort -C
+	then
+		$TRANSMISSION --trash-torrent --download-dir $DOWNLOAD_DIR -a "https://download.grml.org/grml64-full_${RELEASE}.iso.torrent"
+		$TRANSMISSION -t $CURRENT_ID --remove-and-delete
+		echo "Updating to Grml $RELEASE"
+	fi
+}
+
+clonezilla() {
+    echo "Checking if CloneZilla is updated..."
+    local CURRENT=`ls $DOWNLOAD_DIR | grep CloneZilla | grep -o "[[:digit:]]\+.[[:digit:]]\+.[[:digit:]]\+-[[:digit:]]\+"`
+    local RELEASE=`curl -s https://sourceforge.net/projects/clonezilla/files/clonezilla_live_stable/ | grep "<a href=\"/projects/clonezilla/files/clonezilla_live_stable/" | grep -v timeline | grep -o "[[:digit:]]\+.[[:digit:]]\+.[[:digit:]]\+-[[:digit:]]\+" | sort -Vr | head -n1`
+
+	if [ -z $CURRENT ]; then
+		echo "CloneZilla isn't in the download directory. Downloading it..."
+		curl -s -o $DOWNLOAD_DIR/CloneZilla-live-$RELEASE-amd64.iso -L https://sourceforge.net/projects/clonezilla/files/clonezilla_live_stable/$RELEASE/clonezilla-live-$RELEASE-amd64.iso/download
+	fi
+
+    if ! printf "$RELEASE\n$CURRENT" | sort -VC
+    then
+		rm $DOWNLOAD_DIR/CloneZilla*
+        echo "Updating CloneZilla $RELEASE"
+		curl -s -o $DOWNLOAD_DIR/CloneZilla-live-$RELEASE-amd64.iso -L https://sourceforge.net/projects/clonezilla/files/clonezilla_live_stable/$RELEASE/clonezilla-live-$RELEASE-amd64.iso/download
+    fi
+}
+
 help_msg() {
 	printf "usage: `basename $0` [-d <distros>]\n\n"
 cat << EOF
