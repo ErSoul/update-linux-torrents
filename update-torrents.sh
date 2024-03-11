@@ -161,8 +161,8 @@ grml() {
 
 clonezilla() {
     echo "Checking if CloneZilla is updated..."
-    local CURRENT=`ls $DOWNLOAD_DIR | grep CloneZilla | grep -o "[[:digit:]]\+.[[:digit:]]\+.[[:digit:]]\+-[[:digit:]]\+"`
-    local RELEASE=`curl -s https://sourceforge.net/projects/clonezilla/files/clonezilla_live_stable/ | grep "<a href=\"/projects/clonezilla/files/clonezilla_live_stable/" | grep -v timeline | grep -o "[[:digit:]]\+.[[:digit:]]\+.[[:digit:]]\+-[[:digit:]]\+" | sort -Vr | head -n1`
+    local CURRENT=`ls $DOWNLOAD_DIR | grep CloneZilla | grep -o "[[:digit:]]\+\.[[:digit:]]\+\.[[:digit:]]\+-[[:digit:]]\+"`
+    local RELEASE=`curl -s "https://clonezilla.org/downloads/download.php?branch=stable" | grep "Clonezilla live version" | grep -o "[[:digit:]]\+\.[[:digit:]]\+\.[[:digit:]]\+-[[:digit:]]\+"`
 
 	if [ -z $CURRENT ]; then
 		echo "CloneZilla isn't in the download directory. Downloading it..."
