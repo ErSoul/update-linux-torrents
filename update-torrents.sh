@@ -214,6 +214,27 @@ systemrescue() {
     fi
 }
 
+whonix() {
+	echo "Checking if Whonix is updated..."
+	local CURRENT_ID=`$TRANSMISSION --list | grep Whonix | awk '{print $1}'`
+	local CURRENT=`$TRANSMISSION --list | grep Whonix | awk '{print $10}' | grep -o "[[:digit:]]\+\(\.[[:digit:]]\)\+"`
+	local RELEASE=`curl -s https://www.whonix.org/wiki/VirtualBox | grep -o "https://download.whonix.org/ova/.*.ova" | cut -d / -f 5 | head -n1`
+
+	if [ -z $CURRENT ]; then
+		echo "Whonix isn't in the download directory. Downloading it..."
+		$TRANSMISSION --trash-torrent --download-dir $DOWNLOAD_DIR -a "https://download.whonix.org/ova/$RELEASE/Whonix-Xfce-$RELEASE.ova.torrent"
+		# $TRANSMISSION --trash-torrent --download-dir $DOWNLOAD_DIR -a "https://download.whonix.org/ova/$RELEASE/Whonix-CLI-$RELEASE.ova.torrent"
+	fi
+
+	if ! printf "$RELEASE\n$CURRENT" | sort -C
+	then
+		$TRANSMISSION --trash-torrent --download-dir $DOWNLOAD_DIR -a "https://download.whonix.org/ova/$RELEASE/Whonix-Xfce-$RELEASE.ova.torrent"
+		$TRANSMISSION -t $CURRENT_ID --remove-and-delete
+		echo "Updating to Whonix $RELEASE"
+	fi
+}
+
+
 help_msg() {
 	printf "usage: `basename $0` [-d <distros>]\n\n"
 cat << EOF
