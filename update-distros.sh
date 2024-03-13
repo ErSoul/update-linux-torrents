@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -x
+
 type curl > /dev/null 2>&1 || (echo "ERROR: curl must be installed." >&2 && exit 1)
 type awk > /dev/null 2>&1 || (echo "ERROR: awk must be installed." >&2 && exit 1)
 type transmission-remote > /dev/null 2>&1 || (echo "ERROR: transmission must be installed." >&2 && exit 1)
