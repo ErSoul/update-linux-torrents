@@ -21,7 +21,6 @@ Available distros:
 
 - Download directory should be an argument.
 - Torrent client credentials should be setted from arguments.
-- Verify torrent's ID status (Downloading/Seeding) in case torrent(s) is(are) still downloading and avoid mistakes in consecutives short-time executions of the script. 
 - Add preferred download tool option (torrent, zsync, curl). If any of the former tools are not available, default to CURL.
 - Check download integrity with available hashing methods.
 - Verify download with PGP signatures.

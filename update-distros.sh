@@ -13,7 +13,7 @@ DOWNLOAD_DIR="/srv/DATA/ISOS"
 ubuntu() {
 	echo "Checking if Ubuntu is updated..."
 	local CURRENT_ID=`$TRANSMISSION --list | grep ubuntu | awk '{print $1}'`
-	local CURRENT=`$TRANSMISSION --list | grep ubuntu | awk '{print $10}' | cut -d "-" -f 2`
+	local CURRENT=`$TRANSMISSION --list | grep ubuntu | awk '{print $NF}' | cut -d "-" -f 2`
 	local RELEASE=`curl -s https://releases.ubuntu.com/ | grep LTS | grep -o '[[:digit:]]\+\.[[:digit:]]\+\(\.[[:digit:]]\+\)\?' | sort -V | tail -n1`
 
 	if [ -z $CURRENT ]; then
@@ -32,7 +32,7 @@ ubuntu() {
 kali() {
 	echo "Checking if Kali is updated..."
 	local CURRENT_ID=`$TRANSMISSION --list | grep kali | awk '{print $1}'`
-	local CURRENT=`$TRANSMISSION --list | grep kali | awk '{print $10}' | cut -d "-" -f 3`
+	local CURRENT=`$TRANSMISSION --list | grep kali | awk '{print $NF}' | cut -d "-" -f 3`
 	local RELEASE=`curl -s https://cdimage.kali.org/current/ | grep -o kali-linux-.*-live-amd64.iso.torrent | grep -o '[[:digit:]]\+\.[[:digit:]]' | sort -V | tail -n1`
 	
 	if [ -z $CURRENT ]; then
@@ -51,7 +51,7 @@ kali() {
 tails() {
 	echo "Checking if TailsOS is updated..."
 	local CURRENT_ID=`$TRANSMISSION --list | grep tails | awk '{print $1}'`
-	local CURRENT=`$TRANSMISSION --list | grep tails | awk '{print $10}' | cut -d "-" -f 3`
+	local CURRENT=`$TRANSMISSION --list | grep tails | awk '{print $NF}' | cut -d "-" -f 3`
 	local RELEASE=`curl -s https://tails.net/torrents/files/ | grep -o tails-amd64-.*.iso.torrent | grep -v rc | grep -o '[[:digit:]]\+\.[[:digit:]]\+' | sort -V | tail -n1`
 	
 	if [ -z $CURRENT ]; then
@@ -70,7 +70,7 @@ tails() {
 debian() {
 	echo "Checking if Debian is updated..."
 	local CURRENT_ID=`$TRANSMISSION --list | grep debian | awk '{print $1}'`
-	local CURRENT=`$TRANSMISSION --list | grep debian | awk '{print $10}' | cut -d "-" -f 2`
+	local CURRENT=`$TRANSMISSION --list | grep debian | awk '{print $NF}' | cut -d "-" -f 2`
 	local RELEASE=`curl -s https://cdimage.debian.org/debian-cd/current/amd64/bt-cd/ | grep "amd64-netinst.iso.torrent" | grep -v "edu\|mac" | grep -o '[[:digit:]]\+\.[[:digit:]]\+\.[[:digit:]]\+' | sort -V | tail -n1`
 
 	if [ -z $CURRENT ]; then
@@ -89,7 +89,7 @@ debian() {
 elementary() {
     echo "Checking if elementaryOS is updated..."
     local CURRENT_ID=`$TRANSMISSION --list | grep elementary| awk '{print $1}'`
-    local CURRENT=`$TRANSMISSION --list | grep elementary | awk '{print $10}' | cut -d "-" -f 2`
+    local CURRENT=`$TRANSMISSION --list | grep elementary | awk '{print $NF}' | cut -d "-" -f 2`
     local RELEASE=`curl -s https://elementary.io | grep magnet | grep -o "elementaryos.*\.iso&" | cut -d - -f 2`
 
 	if [ -z $CURRENT ]; then
@@ -145,7 +145,7 @@ zorinos() {
 grml() {
 	echo "Checking if GRML is updated..."
 	local CURRENT_ID=`$TRANSMISSION --list | grep grml | awk '{print $1}'`
-	local CURRENT=`$TRANSMISSION --list | grep grml | awk '{print $10}' | grep -o "[[:digit:]]\+.[[:digit:]]\+"`
+	local CURRENT=`$TRANSMISSION --list | grep grml | awk '{print $NF}' | grep -o "[[:digit:]]\+.[[:digit:]]\+"`
 	local RELEASE=`curl -s https://grml.org/download/ | grep -i "Download Grml" | grep -o "[[:digit:]]\+\.[[:digit:]]\+"`
 
 	if [ -z $CURRENT ]; then
@@ -219,7 +219,7 @@ systemrescue() {
 whonix() {
 	echo "Checking if Whonix is updated..."
 	local CURRENT_ID=`$TRANSMISSION --list | grep Whonix | awk '{print $1}'`
-	local CURRENT=`$TRANSMISSION --list | grep Whonix | awk '{print $10}' | grep -o "[[:digit:]]\+\(\.[[:digit:]]\)\+"`
+	local CURRENT=`$TRANSMISSION --list | grep Whonix | awk '{print $NF}' | grep -o "[[:digit:]]\+\(\.[[:digit:]]\)\+"`
 	local RELEASE=`curl -s https://www.whonix.org/wiki/VirtualBox | grep -o "https://download.whonix.org/ova/.*.ova" | cut -d / -f 5 | head -n1`
 
 	if [ -z $CURRENT ]; then
