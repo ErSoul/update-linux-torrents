@@ -236,6 +236,24 @@ whonix() {
 	fi
 }
 
+finnix() {
+	echo "Checking if Finnix is updated..."
+	local CURRENT_ID=`$TRANSMISSION --list | grep finnix | awk '{print $1}'`
+	local CURRENT=`$TRANSMISSION --list | grep finnix | awk '{print $NF}' | grep -o "[[:digit:]]\+"`
+	local RELEASE=`curl -s https://ftp-nyc.osuosl.org/pub/finnix/current/ | grep -o "finnix.*\.iso" | grep -o "[[:digit:]]\+" | head -n1`
+
+	if [ -z $CURRENT ]; then
+		echo "Finnix isn't in the download directory. Downloading it..."
+		$TRANSMISSION --trash-torrent --download-dir $DOWNLOAD_DIR -a "https://ftp-nyc.osuosl.org/pub/finnix/current/finnix-$RELEASE.iso.torrent"
+	fi
+
+	if ! printf "$RELEASE\n$CURRENT" | sort -C
+	then
+		$TRANSMISSION --trash-torrent --download-dir $DOWNLOAD_DIR -a "https://ftp-nyc.osuosl.org/pub/finnix/current/finnix-$RELEASE.iso.torrent"
+		$TRANSMISSION -t $CURRENT_ID --remove-and-delete
+		echo "Updating to Finnix $RELEASE"
+	fi
+}
 
 help_msg() {
 	printf "usage: `basename $0` [-d <distros>]\n\n"

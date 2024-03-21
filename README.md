@@ -16,6 +16,7 @@ Available distros:
 - [GParted](https://gparted.org/)
 - [SystemRescue](https://www.system-rescue.org/)
 - [Whonix](https://www.whonix.org/)
+- [Finnix](https://www.finnix.org/)
 
 ## TODO
 
