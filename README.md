@@ -43,6 +43,14 @@ Download Debian and Kali:
 
 `update-distros.sh -d debian,kali`
 
+## NOTIFY ON ERROR
+
+If for some reason the script can't fetch from the official download sites, you can send a notification through the [ntfy.sh]() service.
+
+The topic might be setted from args, or by setting the environment variable **NTFY_TOPIC**.
+
+`update-distros.sh -n $MY_TOPIC`
+
 ## NON-POSIX COMPLIANT
 
 The `declare -F` statement at the end of the `main` function is only available for BASH.
