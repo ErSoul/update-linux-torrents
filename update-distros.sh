@@ -6,7 +6,6 @@ type transmission-remote > /dev/null 2>&1 || (echo "ERROR: transmission must be 
 type zsync > /dev/null 2>&1 || (echo "ERROR: zsync must be installed." >&2 && exit 1)
 
 TRANSMISSION="transmission-remote --auth transmission:transmission"
-DOWNLOAD_DIR="/srv/DATA/ISOS"
 
 notify() {
 	[ -n "$NTFY_TOPIC" ] && \
@@ -294,10 +293,13 @@ help_msg() {
 cat << EOF
 Specify linux distributions to be updated with transmission-cli.
 
+Args:
+-d	<DIR>	Download directory
+
 Options:
 
 -h		Show this help message
--d <distros>	List of the distro's to be updated. (comma separated)
+-t <distros>	List of the distro's to be updated. (comma separated)
 -n <TOPIC>	Send a notification to the specified NTFY Topic in case of failure
 EOF
 }
@@ -310,13 +312,17 @@ main() {
 				help_msg
 				exit 0
 				;;
-			-d)
+			-t)
 				DEFAULT=false
 				local DISTROS="$2"
 				shift
 				;;
 			-n)
 				NTFY_TOPIC=$2
+				shift
+				;;
+			-d)
+				DOWNLOAD_DIR="$2"
 				shift
 				;;
 			-*|--*)
@@ -327,8 +333,9 @@ main() {
 				shift
 				;;
 		esac
-
 	done
+
+	[ -z "$DOWNLOAD_DIR" ] && echo "ERROR: You must set a directory for downloads." >&2 && exit 1
 
 	if $DEFAULT; then
 		FUNCTIONS=`declare -F | grep -Ev "help|main" | awk '{print $3}'`
