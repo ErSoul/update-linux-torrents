@@ -215,7 +215,7 @@ main() {
 	[ -z "$DOWNLOAD_DIR" ] && echo "ERROR: You must set a directory for downloads" >&2 && exit 1
 
 	if $DEFAULT; then
-		FUNCTIONS=`declare -F | grep -Ev "help|main" | awk '{print $3}'`
+		FUNCTIONS=`declare -F | grep -Ev "help|main|notify" | awk '{print $3}'`
 		for FUNCTION in $FUNCTIONS; do
 			$FUNCTION 2>/dev/null || echo "$FUNCTION is not defined" >&2
 		done

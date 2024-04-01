@@ -208,7 +208,6 @@ gparted() {
     echo "Checking if GParted is updated..."
     local CURRENT=`ls $DOWNLOAD_DIR | grep gparted | grep -o "[[:digit:]]\+\.[[:digit:]]\+\.[[:digit:]]\+-[[:digit:]]\+"`
     local RELEASE=`curl -s https://sourceforge.net/projects/gparted/files/gparted-live-stable/ | grep "<a href=\"/projects/gparted/files/gparted-live-stable/" | grep -o "[[:digit:]]\+\.[[:digit:]]\+\.[[:digit:]]\+-[[:digit:]]\+" | sort -Vr | head -n1`
-	echo -e "Actual: $CURRENT\nNuevo: $RELEASE"
 
 	[ -z "$RELEASE" ] && notify GParted && return
 
@@ -338,7 +337,7 @@ main() {
 	[ -z "$DOWNLOAD_DIR" ] && echo "ERROR: You must set a directory for downloads." >&2 && exit 1
 
 	if $DEFAULT; then
-		FUNCTIONS=`declare -F | grep -Ev "help|main" | awk '{print $3}'`
+		FUNCTIONS=`declare -F | grep -Ev "help|main|notify" | awk '{print $3}'`
 		for FUNCTION in `echo $FUNCTIONS | tr , ' '`; do
 			$FUNCTION 2>/dev/null || echo "$FUNCTION is not defined" >&2
 		done
