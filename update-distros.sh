@@ -35,6 +35,8 @@ ubuntu() {
 		$TRANSMISSION --trash-torrent --download-dir $DOWNLOAD_DIR -a "https://releases.ubuntu.com/$RELEASE/ubuntu-$RELEASE-live-server-amd64.iso.torrent"
 		$TRANSMISSION -t $CURRENT_ID --remove-and-delete
 		echo "Updating to Ubuntu $RELEASE"
+	else
+		echo "Ubuntu is updated..."
 	fi
 }
 
@@ -56,6 +58,8 @@ kali() {
 		$TRANSMISSION --trash-torrent --download-dir $DOWNLOAD_DIR -a "https://cdimage.kali.org/kali-$RELEASE/kali-linux-$RELEASE-live-amd64.iso.torrent"
 		$TRANSMISSION -t $CURRENT_ID --remove-and-delete
 		echo "Updating to Kali Linux $RELEASE"
+	else
+		echo "Kali is updated..."
 	fi
 }
 
@@ -77,6 +81,8 @@ tails() {
 		$TRANSMISSION --trash-torrent --download-dir $DOWNLOAD_DIR -a "https://tails.net/torrents/files/tails-amd64-$RELEASE.iso.torrent"
 		$TRANSMISSION -t $CURRENT_ID --remove-and-delete
 		echo "Updating to TailsOS $RELEASE"
+	else
+		echo "TailOS is updated..."
 	fi
 }
 
@@ -98,6 +104,8 @@ debian() {
 		$TRANSMISSION --trash-torrent --download-dir $DOWNLOAD_DIR -a "https://cdimage.debian.org/debian-cd/current/amd64/bt-cd/debian-$RELEASE-amd64-netinst.iso.torrent"
 		$TRANSMISSION -t $CURRENT_ID --remove-and-delete
 		echo "Updating to Debian $RELEASE"
+	else
+		echo "Debian is updated..."
 	fi
 }
 
@@ -119,6 +127,8 @@ elementary() {
         $TRANSMISSION --trash-torrent --download-dir $DOWNLOAD_DIR -a https://elementary.io/`curl -s https://elementary.io | grep -o "magnet:.*\.iso"`
         $TRANSMISSION -t $CURRENT_ID --remove-and-delete
         echo "Updating to ElementaryOS $RELEASE"
+	else
+		echo "ElementaryOS is updated..."
     fi
 }
 
@@ -139,6 +149,8 @@ tinyServer() {
 		rm $DOWNLOAD_DIR/Core-$CURRENT.iso
         echo "Updating to TinyCore Server $RELEASE"
         zsync -o $DOWNLOAD_DIR/Core-$RELEASE.iso http://tinycorelinux.net/${RELEASE%.*}.x/x86/release/Core-$RELEASE.iso.zsync
+	else
+		echo "TinyCore is updated..."
     fi
 }
 
@@ -160,6 +172,8 @@ zorinos() {
 		rm $DOWNLOAD_DIR/Zorin*
         echo "Updating ZorinOs $RELEASE_VER"
 		curl -o $DOWNLOAD_DIR/Zorin-OS-$RELEASE_VER-Core-64-bit.iso https://distro.ibiblio.org/zorinos/$RELEASE/Zorin-OS-$RELEASE_VER-Core-64-bit.iso
+	else
+		echo "ZorinOS is updated..."
     fi
 }
 
@@ -181,6 +195,8 @@ grml() {
 		$TRANSMISSION --trash-torrent --download-dir $DOWNLOAD_DIR -a "https://download.grml.org/grml64-full_${RELEASE}.iso.torrent"
 		$TRANSMISSION -t $CURRENT_ID --remove-and-delete
 		echo "Updating to Grml $RELEASE"
+	else
+		echo "GRML Linux is updated..."
 	fi
 }
 
@@ -201,6 +217,8 @@ clonezilla() {
 		rm $DOWNLOAD_DIR/CloneZilla*
         echo "Updating CloneZilla $RELEASE"
 		curl -s -o $DOWNLOAD_DIR/CloneZilla-live-$RELEASE-amd64.iso -L https://sourceforge.net/projects/clonezilla/files/clonezilla_live_stable/$RELEASE/clonezilla-live-$RELEASE-amd64.iso/download
+	else
+		echo "CloneZilla is updated..."
     fi
 }
 
@@ -221,6 +239,8 @@ gparted() {
 		rm $DOWNLOAD_DIR/gparted*
         echo "Updating GParted $RELEASE"
 		curl -s -o $DOWNLOAD_DIR/gparted-live-$RELEASE-amd64.iso -L https://sourceforge.net/projects/gparted/files/gparted-live-stable/$RELEASE/gparted-live-$RELEASE-amd64.iso/download
+	else
+		echo "GParted is updated..."
     fi
 }
 
@@ -241,6 +261,7 @@ systemrescue() {
 		rm $DOWNLOAD_DIR/systemrescue*
         echo "Updating SystemRescue $RELEASE"
 		curl -s -o $DOWNLOAD_DIR/systemrescue-$RELEASE-amd64.iso https://fastly-cdn.system-rescue.org/releases/$RELEASE/systemrescue-$RELEASE-amd64.iso
+	echo "SystemRescue is updated..."
     fi
 }
 
@@ -263,6 +284,8 @@ whonix() {
 		$TRANSMISSION --trash-torrent --download-dir $DOWNLOAD_DIR -a "https://download.whonix.org/ova/$RELEASE/Whonix-Xfce-$RELEASE.ova.torrent"
 		$TRANSMISSION -t $CURRENT_ID --remove-and-delete
 		echo "Updating to Whonix $RELEASE"
+	else
+		echo "Whonix is updated..."
 	fi
 }
 
@@ -284,7 +307,31 @@ finnix() {
 		$TRANSMISSION --trash-torrent --download-dir $DOWNLOAD_DIR -a "https://ftp-nyc.osuosl.org/pub/finnix/current/finnix-$RELEASE.iso.torrent"
 		$TRANSMISSION -t $CURRENT_ID --remove-and-delete
 		echo "Updating to Finnix $RELEASE"
+	else
+		echo "Finnix is updated..."
 	fi
+}
+
+openfyde() {
+    echo "Checking if OpenFyde is updated..."
+    local CURRENT=`ls $DOWNLOAD_DIR | grep openfyde | grep -o "r[[:digit:]]\+\(-r[[:digit:]]\+\)\?"`
+    local RELEASE=`curl -fsSIL https://github.com/openFyde/overlay-amd64-openfyde/releases/latest | grep -i "^Location: " | awk -F '/' '{print $NF}' | sed 's/\r//g'`
+
+	[ -z "$RELEASE" ] && notify OpenFyde && return
+
+	if [ -z "$CURRENT" ]; then
+		echo "OpenFyde isn't in the download directory. Downloading it..."
+		curl -s -o $DOWNLOAD_DIR/amd64-openfyde-$RELEASE.img.xz -L https://github.com/openFyde/overlay-amd64-openfyde/releases/download/$RELEASE/amd64-openfyde-$RELEASE.img.xz
+	fi
+
+    if ! printf "$RELEASE\n$CURRENT" | sort -VC
+    then
+		rm $DOWNLOAD_DIR/*openfyde*
+        echo "Updating OpenFyde $RELEASE"
+		curl -s -o $DOWNLOAD_DIR/amd64-openfyde-$RELEASE.img.xz -L https://github.com/openFyde/overlay-amd64-openfyde/releases/download/$RELEASE/amd64-openfyde-$RELEASE.img.xz
+	else
+		echo "OpenFyde is updated..."
+    fi
 }
 
 help_msg() {

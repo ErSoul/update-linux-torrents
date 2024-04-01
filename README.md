@@ -17,6 +17,7 @@ Available distros:
 - [SystemRescue](https://www.system-rescue.org/)
 - [Whonix](https://www.whonix.org/)
 - [Finnix](https://www.finnix.org/)
+- [OpenFyde](https://openfyde.io/)
 
 ## TODO
 
