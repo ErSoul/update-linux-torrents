@@ -18,6 +18,7 @@ Available distros:
 - [Whonix](https://www.whonix.org/)
 - [Finnix](https://www.finnix.org/)
 - [OpenFyde](https://openfyde.io/)
+- [AntiX](https://antixlinux.com/)
 
 ## TODO
 

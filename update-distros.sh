@@ -17,6 +17,67 @@ notify() {
 		ntfy.sh/$NTFY_TOPIC
 }
 
+help_msg() {
+	printf "usage: `basename $0` [-d <distros>]\n\n"
+cat << EOF
+Specify linux distributions to be updated with transmission-cli.
+
+Args:
+-d	<DIR>	Download directory
+
+Options:
+
+-h		Show this help message
+-t <distros>	List of the distro's to be updated. (comma separated)
+-n <TOPIC>	Send a notification to the specified NTFY Topic in case of failure
+EOF
+}
+
+main() {
+	local DEFAULT=true
+	while [ $# -gt 0 ]; do
+		case $1 in
+			-h|--help)
+				help_msg
+				exit 0
+				;;
+			-t)
+				DEFAULT=false
+				local DISTROS="$2"
+				shift
+				;;
+			-n)
+				NTFY_TOPIC=$2
+				shift
+				;;
+			-d)
+				DOWNLOAD_DIR="$2"
+				shift
+				;;
+			-*|--*)
+				echo "Invalid option $1"
+				exit 1
+				;;
+			*)
+				shift
+				;;
+		esac
+	done
+
+	[ -z "$DOWNLOAD_DIR" ] && echo "ERROR: You must set a directory for downloads." >&2 && exit 1
+
+	if $DEFAULT; then
+		FUNCTIONS=`declare -F | grep -Ev "help|main|notify" | awk '{print $3}'`
+		for FUNCTION in `echo $FUNCTIONS | tr , ' '`; do
+			$FUNCTION 2>/dev/null || echo "$FUNCTION is not defined" >&2
+		done
+	else
+		for DISTRO in `echo $DISTROS | tr , ' '`; do
+			$DISTRO 2>/dev/null || echo "$DISTRO is not defined" >&2
+		done
+	fi
+}
+
 ubuntu() {
 	echo "Checking if Ubuntu is updated..."
 	local CURRENT_ID=`$TRANSMISSION --list | grep ubuntu | awk '{print $1}'`
@@ -334,64 +395,26 @@ openfyde() {
     fi
 }
 
-help_msg() {
-	printf "usage: `basename $0` [-d <distros>]\n\n"
-cat << EOF
-Specify linux distributions to be updated with transmission-cli.
+antix() {
+	echo "Checking if antix is updated..."
+	local CURRENT_ID=`$TRANSMISSION --list | grep antiX | awk '{print $1}'`
+	local CURRENT=`$TRANSMISSION --list | grep antiX | awk '{print $NF}' | grep -o "[[:digit:]]\+\.[[:digit:]]\+"`
+	local RELEASE=`curl -s https://l2.mxrepo.com/torrents/ | grep -o "antiX.*\.iso" | grep -o "[[:digit:]]\+\.[[:digit:]]\+" | head -n1`
 
-Args:
--d	<DIR>	Download directory
+	[ -z "$RELEASE" ] && notify antiX && return
 
-Options:
+	if [ -z "$CURRENT" ]; then
+		echo "AntiX isn't in the download directory. Downloading it..."
+		$TRANSMISSION --trash-torrent --download-dir $DOWNLOAD_DIR -a "https://l2.mxrepo.com/torrents/antiX-${RELEASE}_x64-core.iso.torrent"
+	fi
 
--h		Show this help message
--t <distros>	List of the distro's to be updated. (comma separated)
--n <TOPIC>	Send a notification to the specified NTFY Topic in case of failure
-EOF
-}
-
-main() {
-	local DEFAULT=true
-	while [ $# -gt 0 ]; do
-		case $1 in
-			-h|--help)
-				help_msg
-				exit 0
-				;;
-			-t)
-				DEFAULT=false
-				local DISTROS="$2"
-				shift
-				;;
-			-n)
-				NTFY_TOPIC=$2
-				shift
-				;;
-			-d)
-				DOWNLOAD_DIR="$2"
-				shift
-				;;
-			-*|--*)
-				echo "Invalid option $1"
-				exit 1
-				;;
-			*)
-				shift
-				;;
-		esac
-	done
-
-	[ -z "$DOWNLOAD_DIR" ] && echo "ERROR: You must set a directory for downloads." >&2 && exit 1
-
-	if $DEFAULT; then
-		FUNCTIONS=`declare -F | grep -Ev "help|main|notify" | awk '{print $3}'`
-		for FUNCTION in `echo $FUNCTIONS | tr , ' '`; do
-			$FUNCTION 2>/dev/null || echo "$FUNCTION is not defined" >&2
-		done
+	if ! printf "$RELEASE\n$CURRENT" | sort -C
+	then
+		$TRANSMISSION --trash-torrent --download-dir $DOWNLOAD_DIR -a "https://l2.mxrepo.com/torrents/antiX-${RELEASE}_x64-core.iso.torrent"
+		$TRANSMISSION -t $CURRENT_ID --remove-and-delete
+		echo "Updating to AntiX $RELEASE"
 	else
-		for DISTRO in `echo $DISTROS | tr , ' '`; do
-			$DISTRO 2>/dev/null || echo "$DISTRO is not defined" >&2
-		done
+		echo "AntiX is updated..."
 	fi
 }
 
