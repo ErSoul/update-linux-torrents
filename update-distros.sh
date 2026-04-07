@@ -418,4 +418,27 @@ antix() {
 	fi
 }
 
+# almalinux() {
+# 	echo "Checking if AlmaLinux is updated..."
+# 	local CURRENT_ID=`$TRANSMISSION --list | grep AlmaLinux | awk '{print $1}'`
+# 	local CURRENT=`$TRANSMISSION --list | grep AlmaLinux | awk '{print $NF}' | grep -o "[[:digit:]]\+\.[[:digit:]]\+"`
+# 	local RELEASE=`curl -s https://repo.almalinux.org/almalinux/ | grep -o ">[[:digit:]]\+/<" | grep -o "[[:digit:]]\+" | sort -r | head -1`
+# 
+# 	[ -z "$RELEASE" ] && notify AlmaLinux && return
+# 
+# 	if [ -z "$CURRENT" ]; then
+# 		echo "AlmaLinux isn't in the download directory. Downloading it..."
+# 		$TRANSMISSION --trash-torrent --download-dir $DOWNLOAD_DIR -a "https://repo.almalinux.org/almalinux/${RELEASE}/isos/x86_64/AlmaLinux-*-x86_64.torrent"
+# 	fi
+# 
+# 	if ! printf "$RELEASE\n$CURRENT" | sort -C
+# 	then
+# 		$TRANSMISSION --trash-torrent --download-dir $DOWNLOAD_DIR -a "https://l2.mxrepo.com/torrents/antiX-${RELEASE}_x64-core.iso.torrent"
+# 		$TRANSMISSION -t $CURRENT_ID --remove-and-delete
+# 		echo "Updating to AntiX $RELEASE"
+# 	else
+# 		echo "AntiX is updated..."
+# 	fi
+# }
+
 main $@
